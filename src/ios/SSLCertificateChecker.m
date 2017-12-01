@@ -82,6 +82,7 @@
 }
 
 - (NSString*) getFingerprint: (SecCertificateRef) cert {
+    
     NSData* certData = (__bridge NSData*) SecCertificateCopyData(cert);
     unsigned char sha1Bytes[CC_SHA1_DIGEST_LENGTH];
     CC_SHA1(certData.bytes, (int)certData.length, sha1Bytes);
@@ -93,12 +94,12 @@
 }
 
 - (BOOL) isFingerprintTrusted: (NSString*)fingerprint {
-  for (NSString *fp in self._allowedFingerprints) {
-    if ([fingerprint caseInsensitiveCompare: fp] == NSOrderedSame) {
-      return YES;
+    for (NSString *fp in self._allowedFingerprints) {
+        if ([fingerprint caseInsensitiveCompare: fp] == NSOrderedSame) {
+            return YES;
+        }
     }
-  }
-  return NO;
+    return NO;
 }
 
 @end
@@ -115,7 +116,22 @@
 
 - (void)check:(CDVInvokedUrlCommand*)command {
     NSString *serverURL = [command.arguments objectAtIndex:0];
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:serverURL]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:serverURL]];
+    
+    NSNumber* timeout = [command argumentAtIndex:4 withDefault:[NSNumber numberWithDouble:60.0]];
+    NSTimeInterval connectTimeout = [timeout doubleValue];
+    
+    // set timeout
+    [request setTimeoutInterval:connectTimeout];
+    
+    NSDictionary *dict = [command argumentAtIndex:3 withDefault:@{}];
+    
+    NSArray *keys = [dict allKeys];
+    
+    // set http-header args
+    for (NSString *key in keys) {
+        [request setValue:dict[key] forHTTPHeaderField:key];
+    }
     
     CustomURLConnectionDelegate *delegate = [[CustomURLConnectionDelegate alloc] initWithPlugin:self
                                                                                      callbackId:command.callbackId
@@ -129,3 +145,4 @@
 }
 
 @end
+

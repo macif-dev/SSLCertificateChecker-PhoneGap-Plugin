@@ -72,7 +72,11 @@ You can find it f.i. by opening the server URL in Chrome. Then click the green c
           successCallback,
           errorCallback,
           server,
-          fingerprint);
+          fingerprint,
+          fingerprintAlt,
+          httpHeaderArgs,
+          timeoutArg
+          );
 
    function successCallback(message) {
      alert(message);
@@ -100,7 +104,10 @@ Note you may want to force clients to update the app when the new certificate is
           successCallback,
           errorCallback,
           server,
-          fingerprints);
+          fingerprints
+          fingerprintAlt,
+          httpHeaderArgs,
+          timeoutArg);
 ```
 
 

@@ -13,6 +13,8 @@ cordova.commandProxy.add("SSLCertificateChecker", {
     var serverURL = params[0];
     // params[1] is irrelevant
     var allowedSHA1Fingerprints = params[2];
+    var timeout = params[4];
+    var httpHeader = params[3];
 
     if (typeof errorCallback != "function") {
       console.log("SSLCertificateChecker.find failure: errorCallback parameter must be a function");
