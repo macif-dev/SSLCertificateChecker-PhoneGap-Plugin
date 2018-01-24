@@ -58,13 +58,12 @@ public class SSLCertificateChecker extends CordovaPlugin {
         final HttpsURLConnection con = (HttpsURLConnection) new URL(httpsURL).openConnection();
 
         // set Header args
-
-        while(httpHeaderArgs.keys().hasNext()){
-            String key = httpHeaderArgs.keys().next();
+        Iterator<String> it = httpHeaderArgs.keys();
+        while(it.hasNext()){
+            String key = it.next();
             String value = httpHeaderArgs.getString(key);
             con.setRequestProperty(key, value);
         }
-
 
         // set Timeout
         con.setConnectTimeout(connectTimeout * 1000);
