@@ -18,6 +18,9 @@ SSLCertificateChecker.prototype.check = function (successCallback, errorCallback
   // if an array is not passed, transform the input into one
   var fpArr = [];
 
+  // if a json is not passed, transform the input into one
+  var headerArr = {};
+
   if (allowedSHA1FingerprintOrArray !== undefined) {
       if (typeof allowedSHA1FingerprintOrArray == "string") {
           fpArr.push(allowedSHA1FingerprintOrArray);
@@ -30,15 +33,19 @@ SSLCertificateChecker.prototype.check = function (successCallback, errorCallback
       fpArr.push(allowedSHA1FingerprintAlt);
   }
 
-  if(headerHttpArgs == null){
-    headerHttpArgs = {};
+  if(headerHttpArgs !== undefined){
+      if (typeof headerHttpArgs == "string") {
+          headerArr = JSON.stringify(headerHttpArgs);
+      }else{
+          headerArr = headerHttpArgs;
+      }
   }
 
   if(timeout == null){
     timeout = 60;
   }
 
-  exec(successCallback, errorCallback, "SSLCertificateChecker", "check", [serverURL, false, fpArr, headerHttpArgs, timeout]);
+  exec(successCallback, errorCallback, "SSLCertificateChecker", "check", [serverURL, false, fpArr, headerArr, timeout]);
 };
 
 SSLCertificateChecker.prototype.checkInCertChain = function (successCallback, errorCallback, serverURL, allowedSHA1FingerprintOrArray, allowedSHA1FingerprintAlt) {

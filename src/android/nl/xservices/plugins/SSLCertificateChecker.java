@@ -28,7 +28,7 @@ public class SSLCertificateChecker extends CordovaPlugin {
                     try {
                         final String serverURL = args.getString(0);
                         final JSONArray allowedFingerprints = args.getJSONArray(2);
-                        final JSONArray httpHeaderArgs = args.getJSONArray(3);
+                        final JSONObject httpHeaderArgs = args.getJSONObject(3);
                         final Integer connectTimeout = args.getInt(4);
 
                         final String serverCertFingerprint = getFingerprint(serverURL, connectTimeout, httpHeaderArgs);
@@ -38,6 +38,7 @@ public class SSLCertificateChecker extends CordovaPlugin {
                                 callbackContext.success("CONNECTION_SECURE");
                                 return;
                             }
+
                         }
 
                         callbackContext.error("CONNECTION_NOT_SECURE");
@@ -53,27 +54,27 @@ public class SSLCertificateChecker extends CordovaPlugin {
         }
     }
 
-    private static String getFingerprint(String httpsURL, Integer connectTimeout, JSONArray httpHeaderArgs) throws IOException, NoSuchAlgorithmException, CertificateException, CertificateEncodingException {
+    private static String getFingerprint(String httpsURL, Integer connectTimeout, JSONObject httpHeaderArgs) throws IOException, NoSuchAlgorithmException, CertificateException, CertificateEncodingException, JSONException {
         final HttpsURLConnection con = (HttpsURLConnection) new URL(httpsURL).openConnection();
 
         // set Header args
-        try {
-            for (int index = 0; index < httpHeaderArgs.length(); index++) {
-                JSONObject jsonObj = httpHeaderArgs.getJSONObject(index);
-                String key = jsonObj.keys().next();
-                String value = jsonObj.getString(key);
-                con.setRequestProperty(key, value);
-            }
-        } catch (JSONException ex) {
-            ex.printStackTrace();
+
+        while(httpHeaderArgs.keys().hasNext()){
+            String key = httpHeaderArgs.keys().next();
+            String value = httpHeaderArgs.getString(key);
+            con.setRequestProperty(key, value);
         }
 
+
+        // set Timeout
         con.setConnectTimeout(connectTimeout * 1000);
 
         con.connect();
+
         final Certificate cert = con.getServerCertificates()[0];
         final MessageDigest md = MessageDigest.getInstance("SHA1");
         md.update(cert.getEncoded());
+
         return dumpHex(md.digest());
     }
 
