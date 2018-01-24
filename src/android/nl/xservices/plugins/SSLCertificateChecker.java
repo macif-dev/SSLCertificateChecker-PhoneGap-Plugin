@@ -9,6 +9,8 @@ import org.json.JSONObject;
 import javax.net.ssl.HttpsURLConnection;
 import javax.security.cert.CertificateException;
 import java.io.IOException;
+import java.util.Iterator;
+
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
